@@ -1,20 +1,14 @@
 pipeline {
     agent any
-    
-    tools {
-        // Ensure this matches the name configured in Jenkins global tool configuration
-        nodeJS 'node' 
-    }
 
     environment {
-        // Forces Playwright to run in headless mode so it doesn't fail trying to open visual browser windows on your Jenkins server
+        // Forces Playwright to run in headless mode so it doesn't try to open physical windows
         CI = 'true'
     }
 
     stages {
         stage('Checkout Source') {
             steps {
-                // Pulls project code from your configured Git repository
                 checkout scm
             }
         }
@@ -22,19 +16,19 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo 'Installing project dependencies...'
-                sh 'npm ci' // Fast, clean install optimized for CI/CD servers
+                // If you are on Windows, use 'bat' instead of 'sh'
+                bat 'npm ci' 
                 
                 echo 'Installing required Playwright system browser binaries...'
-                sh 'npx playwright install --with-deps'
+                bat 'npx playwright install --with-deps'
             }
         }
 
         stage('Execute Automation Tests') {
             steps {
                 echo 'Running Playwright Cross-Browser Testing Suite...'
-                // The catchError block ensures that even if tests fail, the pipeline moves forward to publish reports
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    sh 'npx playwright test'
+                    bat 'npx playwright test'
                 }
             }
         }
