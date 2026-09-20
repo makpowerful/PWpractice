@@ -3,7 +3,7 @@ pipeline {
     
     tools {
         // Ensure this matches the name configured in Jenkins global tool configuration
-        nodejs 'node' 
+        nodeJS 'node' 
     }
 
     environment {
