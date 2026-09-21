@@ -1,4 +1,4 @@
-import {test,Locator,expect, Page} from '@playwright/test';
+import { Locator, expect, Page } from '@playwright/test';
 
 
 export class LoginPO{
@@ -19,8 +19,14 @@ export class LoginPO{
     }
 
     async logintoApp(){
-        await this.emailTextBox.fill("mak_powerful@yahoo.co.in");
-        await this.passowrdTextBox.fill("Arthas1@3");
+        const { ADMIN_USERNAME: email, ADMIN_PASSWORD: password } = process.env;
+
+        if (!email || !password) {
+            throw new Error('ADMIN_USERNAME and ADMIN_PASSWORD must be set in the environment.');
+        }
+
+        await this.emailTextBox.fill(email);
+        await this.passowrdTextBox.fill(password);
         await this.signInButton.click();
     }
 

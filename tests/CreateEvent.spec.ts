@@ -1,15 +1,14 @@
-import {expect, test} from '@playwright/test'
-import { POManager } from '../pageObjects/POManger';
+// 1. Change the import target to point cleanly to your custom fixtures file
+import { test, expect } from './customFixtures'; 
 
-test('Test Event Creation', async ({ page }) => {
-    const poManager = new POManager(page);
-    const loginPage = poManager.getLoginPage();
-    const homePage = poManager.getHomePage();
-    const eventPage = poManager.getEventPage();
+// 2. Pass your custom page objects directly into the parameter block context
+test('Test Event Creation', async ({ loginPage, homePage, eventPage }) => {
+    
+    // 3. Execute your atomic workflow commands immediately on line one!
     await loginPage.goto();
     await loginPage.logintoApp();
     await loginPage.checkPageTitle();
     await homePage.createEvent();
     await eventPage.filloutForm();
-
+    
 });
