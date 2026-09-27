@@ -1,6 +1,9 @@
 import { expect, test } from '@playwright/test';
 
 const authFile = 'playwright/.auth/user.json';
+const env = (globalThis as typeof globalThis & {
+    process?: { env?: Record<string, string | undefined> };
+}).process?.env ?? {};
 
 test.describe.serial('Shopping Cart Session Tests', () => {
     
@@ -8,8 +11,8 @@ test.describe.serial('Shopping Cart Session Tests', () => {
     test('Session store test', async ({ page }) => {
         await page.goto('https://rahulshettyacademy.com/client/#/auth/login');
         
-        await page.locator('#userEmail').fill("mak_powerful@yahoo.co.in");
-        await page.locator('#userPassword').fill("Arthas1@3");
+        await page.locator('#userEmail').fill(env.ADMIN_USERNAME || '');
+        await page.locator('#userPassword').fill(env.ADMIN_PASSWORD || '');
         await page.getByRole('button', { name: 'Login' }).click();
 
         await page.waitForURL(/.*dashboard/);

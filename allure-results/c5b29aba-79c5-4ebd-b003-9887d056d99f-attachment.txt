@@ -1,3 +1,0 @@
-Playwright Locator Practice App
-startEdit(102)
-startEdit(103)
