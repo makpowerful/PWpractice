@@ -1,13 +1,6 @@
 pipeline {
-    agent {
-        docker {
-            // Explicitly wrapped in double quotes to prevent registry parsing errors on Windows hosts
-            image "://microsoft.com"
-            args "-u root"
-            // Re-uses the existing node workspace cache instead of building unique volumes
-            reuseNode true
-        }
-    }
+    // 1. We change agent to any so Jenkins initializes the workspace without breaking
+    agent any
 
     environment {
         CI = 'true'
@@ -20,18 +13,22 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Execute Playwright Tests in Docker') {
             steps {
-                echo 'Installing project dependencies...'
-                sh 'npm ci' 
-            }
-        }
-
-        stage('Execute Automation Tests') {
-            steps {
-                echo 'Running Playwright Cross-Browser Testing Suite inside Docker...'
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    sh 'npx playwright test'
+                // 2. We use docker.image script block which handles Windows paths flawlessly
+                script {
+                    def playwrightImg = docker.image("://microsoft.com")
+                    
+                    // This runs all commands inside the safely isolated Linux container
+                    playwrightImg.inside("-u root") {
+                        echo 'Installing project dependencies inside Docker container...'
+                        sh 'npm ci'
+                        
+                        echo 'Running Playwright Cross-Browser Testing Suite...'
+                        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                            sh 'npx playwright test'
+                        }
+                    }
                 }
             }
         }
@@ -39,7 +36,6 @@ pipeline {
 
     post {
         always {
-            // Script block protects execution if workspace steps fail early
             script {
                 echo 'Publishing reporting assets to Jenkins...'
                 try {
@@ -52,7 +48,7 @@ pipeline {
                         reportName: 'Playwright HTML Report'
                     ])
                 } catch (Exception e) {
-                    echo "Skipping HTML report publishing: Workspace folder not generated yet."
+                    echo "Could not publish Playwright Report: ${e.message}"
                 }
                 
                 try {
@@ -62,7 +58,7 @@ pipeline {
                            reportBuildPolicy: 'ALWAYS', 
                            results: [[path: 'allure-results']]
                 } catch (Exception e) {
-                    echo "Skipping Allure report publishing: Workspace folder not generated yet."
+                    echo "Could not publish Allure Report: ${e.message}"
                 }
             }
         }
