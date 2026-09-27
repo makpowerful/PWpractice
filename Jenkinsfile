@@ -1,8 +1,13 @@
 pipeline {
-    agent any
+    // 1. Switched from 'agent any' to use the official Playwright Docker container
+    agent {
+        docker {
+            image '://microsoft.com'
+            args '-u root'
+        }
+    }
 
     environment {
-        // Forces Playwright to run in headless mode so it doesn't try to open physical windows
         CI = 'true'
     }
 
@@ -16,19 +21,20 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo 'Installing project dependencies...'
-                // If you are on Windows, use 'bat' instead of 'sh'
-                bat 'npm ci' 
+                // 2. Changed 'bat' to 'sh' because Docker runs on a Linux base
+                sh 'npm ci' 
                 
-                echo 'Installing required Playwright system browser binaries...'
-                bat 'npx playwright install --with-deps'
+                // NOTE: 'npx playwright install --with-deps' is REMOVED 
+                // because all browsers and OS libraries are already baked into the Docker image!
             }
         }
 
         stage('Execute Automation Tests') {
             steps {
-                echo 'Running Playwright Cross-Browser Testing Suite...'
+                echo 'Running Playwright Cross-Browser Testing Suite inside Docker...'
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    bat 'npx playwright test'
+                    // 3. Changed 'bat' to 'sh'
+                    sh 'npx playwright test'
                 }
             }
         }
@@ -38,7 +44,6 @@ pipeline {
         always {
             echo 'Publishing reporting assets to Jenkins...'
             
-            // 1. Publish standard Playwright HTML Report
             publishHTML([
                 allowMissing: false,
                 alwaysLinkToLastBuild: true,
@@ -48,7 +53,6 @@ pipeline {
                 reportName: 'Playwright HTML Report'
             ])
             
-            // 2. Compile and Publish rich interactive Allure Report
             allure includeProperties: false, 
                    jdk: '', 
                    properties: [], 
