@@ -19,7 +19,10 @@ export class LoginPO{
     }
 
     async logintoApp(){
-        const { ADMIN_USERNAME: email, ADMIN_PASSWORD: password } = process.env;
+        const env = (globalThis as typeof globalThis & {
+            process?: { env?: Record<string, string | undefined> };
+        }).process?.env ?? {};
+        const { ADMIN_USERNAME: email, ADMIN_PASSWORD: password } = env;
 
         if (!email || !password) {
             throw new Error('ADMIN_USERNAME and ADMIN_PASSWORD must be set in the environment.');

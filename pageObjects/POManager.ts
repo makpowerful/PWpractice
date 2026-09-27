@@ -20,17 +20,17 @@ constructor(page:Page)
 
 }
 
-getLoginPage()
+getLoginPage(): LoginPO
 {
     return this.LoginPO;
 }
 
-getHomePage()
+getHomePage(): HomePO
 {
     return this.HomePO;
 }
 
-getEventPage()
+getEventPage(): EventPO
 {
     return this.EventPO;
 }

@@ -31,20 +31,20 @@ export class EventPO{
     }
 
     async filloutForm(){
-        
-    await this.page.getByRole('heading', {name : 'New Event'}).isVisible
+
+    await expect(this.page.getByRole('heading', { name: 'New Event' })).toBeVisible();
 
     await this.titleTextbox.fill(this.eventTitle);
-    await this.describeTextArea.fill("Test Description");
-    await this.categoryDD.selectOption("Sports");
-    await this.cityTextbox.fill("Bengaluru");
-    await this.venueTextArea.fill("Test Venue");
-    await this.priceSpinButton.fill("100");
-    await this.totalSeatsSpinButton.fill("5");
-    await this.eventTextBox.fill("2026-12-12T11:11");
+    await this.describeTextArea.fill('Test Description');
+    await this.categoryDD.selectOption('Sports');
+    await this.cityTextbox.fill('Bengaluru');
+    await this.venueTextArea.fill('Test Venue');
+    await this.priceSpinButton.fill('100');
+    await this.totalSeatsSpinButton.fill('5');
+    await this.eventTextBox.fill('2026-12-12T11:11');
     await this.addEventButton.click();
 
-    await this.page.locator("//tr//td/span[contains(text(),'"+this.eventTitle+"')]").isVisible;
+    await expect(this.page.locator(`//tr//td/span[contains(text(),'${this.eventTitle}')]`)).toBeVisible();
     }
 
 
