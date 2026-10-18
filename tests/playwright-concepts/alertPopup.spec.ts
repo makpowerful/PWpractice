@@ -17,5 +17,6 @@ test('Test alert pop up practice', async ({ page }) => {
 
     await page.goto("https://rahulshettyacademy.com/AutomationPractice/");
     await page.getByRole('button', { name: 'Alert' }).click();
-
+    //await page.mouse.wheel(0, 500);
+    //await page.close();
 });

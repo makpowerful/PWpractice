@@ -11,10 +11,10 @@ for(let data1 of JSObject){
 test(`Checking test run for ${data1.val}`,async({page})=>{
 
     await page.goto("https://www.amazon.com");
-    await page.getByRole('link', {name : data1.val}).click;
+    await page.getByRole('link', {name : data1.val}).first().click();
 
     let title : string = await page.title();
-    console.log(title);
+    await console.log(title);
 
 
 

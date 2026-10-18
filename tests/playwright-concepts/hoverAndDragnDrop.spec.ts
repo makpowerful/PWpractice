@@ -25,3 +25,13 @@ test('Test Drag and Drop', async({page})=>{
     await source.dragTo(destination);
     
 });
+
+test('Test Drag example 2', async ({ page }) => {
+
+    page.goto("https://seleniumbase.io/other/drag_and_drop");
+
+    let sourceElement = await page.locator('#drag1')
+    let destination = await page.locator('#div1')
+
+    await sourceElement.dragTo(destination)
+});
